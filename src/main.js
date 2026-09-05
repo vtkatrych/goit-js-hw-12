@@ -6,6 +6,8 @@ import {
   showLoader,
 } from './js/render-functions';
 
+import { searchParams } from './js/pixabay-api';
+
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
@@ -14,6 +16,8 @@ const input = document.querySelector('input[name="search-text"]');
 
 form.addEventListener('submit', event => {
   event.preventDefault();
+
+  searchParams.resetPage();
 
   const searchQuery = input.value.trim();
 
@@ -47,4 +51,8 @@ form.addEventListener('submit', event => {
     .finally(() => {
       hideLoader();
     });
+});
+
+btn.addEventListener('click', () => {
+  searchParams.increment();
 });
