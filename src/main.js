@@ -4,6 +4,8 @@ import {
   clearGallery,
   hideLoader,
   showLoader,
+  showLoadMoreButton,
+  hideLoadMoreButton,
 } from './js/render-functions';
 
 import iziToast from 'izitoast';
@@ -15,7 +17,10 @@ let totalPages = 0;
 
 const form = document.querySelector('.form');
 const input = document.querySelector('input[name="search-text"]');
+
 const btn = document.querySelector('.btn');
+
+hideLoadMoreButton();
 
 form.addEventListener('submit', async event => {
   event.preventDefault();
@@ -29,7 +34,7 @@ form.addEventListener('submit', async event => {
   currentPage = 1;
   showLoader();
   clearGallery();
-  if (btn) btn.classList.add('btn');
+  hideLoadMoreButton();
 
   try {
     const data = await getImagesByQuery(searchQuery, currentPage);
@@ -45,17 +50,24 @@ form.addEventListener('submit', async event => {
 
     totalPages = Math.ceil(data.totalHits / 15);
 
-    createGallery(data.hits);
+    createGallery(data.hits, false);
 
-    if (totalPages > 1 && btn) {
-      btn.classList.remove('btn');
+    if (totalPages === 1) {
+      iziToast.info({
+        message: "We're sorry, but you've reached the end of search results.",
+        position: 'topRight',
+      });
+      return;
+    }
+
+    if (totalPages > 1) {
+      showLoadMoreButton();
     }
   } catch (error) {
     console.log(error);
-
     iziToast.error({
       title: 'Error',
-      message: "'Something went wrong. Please try again!",
+      message: 'Something went wrong. Please try again!',
       position: 'topRight',
     });
   } finally {
@@ -66,22 +78,33 @@ form.addEventListener('submit', async event => {
 if (btn) {
   btn.addEventListener('click', async () => {
     currentPage += 1;
+
     showLoader();
+    hideLoadMoreButton();
 
     try {
       const data = await getImagesByQuery(searchQuery, currentPage);
 
-      createGallery(data.hits);
+      createGallery(data.hits, true);
 
       if (currentPage >= totalPages) {
-        btn.classList.add('btn');
+        hideLoadMoreButton();
         iziToast.info({
           message: "We're sorry, but you've reached the end of search results.",
           position: 'topRight',
         });
+      } else {
+        showLoadMoreButton();
       }
     } catch (error) {
       console.log(error);
+
+      iziToast.error({
+        title: 'Error',
+        message: 'Failed to load more images. Please try again!',
+        position: 'topRight',
+      });
+      showLoadMoreButton();
     } finally {
       hideLoader();
     }
