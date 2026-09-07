@@ -10,7 +10,7 @@ let lightbox = new SimpleLightbox('.gallery a', {
   captionDelay: 250,
 });
 
-export function createGallery(images) {
+export function createGallery(images, isAppend = false) {
   const galleryMarkup = images
     .map(
       ({
@@ -23,7 +23,7 @@ export function createGallery(images) {
         downloads,
       }) => {
         return `<li class="gallery-item">
-        <a class="galerry-link" href=${largeImageURL}>
+        <a class="galery-link" href=${largeImageURL}>
       <img class="gallery-image" src="${webformatURL}" alt="${tags}" />
       </a>
       <div class="info">
@@ -46,9 +46,26 @@ export function createGallery(images) {
 
     .join('');
 
-  galleryContainer.innerHTML = galleryMarkup;
+  if (isAppend) {
+    galleryContainer.insertAdjacentHTML('beforeend', galleryMarkup);
+    smoothScroll();
+  } else {
+    galleryContainer.innerHTML = galleryMarkup;
+  }
 
   lightbox.refresh();
+}
+
+function smoothScroll() {
+  const firstCard = galleryContainer.querySelector('.gallery-item');
+  if (firstCard) {
+    const cardHeight = firstCard.getBoundingClientRect().height;
+
+    window.scrollBy({
+      top: cardHeight * 2,
+      behavior: 'smooth',
+    });
+  }
 }
 
 export function clearGallery() {
@@ -61,12 +78,4 @@ export function showLoader() {
 
 export function hideLoader() {
   loader.classList.remove('is-active');
-}
-
-export function showLoadMoreButton() {
-  btn.classList.add('is-here');
-}
-
-export function hideLoadMoreButton() {
-  btn.classList.remove('is-here');
 }
