@@ -17,7 +17,6 @@ let totalPages = 0;
 
 const form = document.querySelector('.form');
 const input = document.querySelector('input[name="search-text"]');
-
 const btn = document.querySelector('.btn');
 
 hideLoadMoreButton();
@@ -52,15 +51,13 @@ form.addEventListener('submit', async event => {
 
     createGallery(data.hits, false);
 
+    // ВИПРАВЛЕНО: прибрали return. Тепер код безпечно йде далі до finally
     if (totalPages === 1) {
       iziToast.info({
         message: "We're sorry, but you've reached the end of search results.",
         position: 'topRight',
       });
-      return;
-    }
-
-    if (totalPages > 1) {
+    } else if (totalPages > 1) {
       showLoadMoreButton();
     }
   } catch (error) {
@@ -71,7 +68,7 @@ form.addEventListener('submit', async event => {
       position: 'topRight',
     });
   } finally {
-    hideLoader();
+    hideLoader(); // Тепер лоадер гарантовано і вчасно сховається, звільнивши сторінку для скролу
   }
 });
 
@@ -98,7 +95,6 @@ if (btn) {
       }
     } catch (error) {
       console.log(error);
-
       iziToast.error({
         title: 'Error',
         message: 'Failed to load more images. Please try again!',
