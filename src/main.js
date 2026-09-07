@@ -21,6 +21,18 @@ const btn = document.querySelector('.btn');
 
 hideLoadMoreButton();
 
+function smoothScroll() {
+  const firstCard = document.querySelector('.gallery-item');
+  if (firstCard) {
+    const cardHeight = firstCard.getBoundingClientRect().height;
+
+    window.scrollBy({
+      top: cardHeight * 2,
+      behavior: 'smooth',
+    });
+  }
+}
+
 form.addEventListener('submit', async event => {
   event.preventDefault();
 
@@ -51,13 +63,14 @@ form.addEventListener('submit', async event => {
 
     createGallery(data.hits, false);
 
-    // ВИПРАВЛЕНО: прибрали return. Тепер код безпечно йде далі до finally
     if (totalPages === 1) {
       iziToast.info({
         message: "We're sorry, but you've reached the end of search results.",
         position: 'topRight',
       });
-    } else if (totalPages > 1) {
+    }
+
+    if (totalPages > 1) {
       showLoadMoreButton();
     }
   } catch (error) {
@@ -68,7 +81,7 @@ form.addEventListener('submit', async event => {
       position: 'topRight',
     });
   } finally {
-    hideLoader(); // Тепер лоадер гарантовано і вчасно сховається, звільнивши сторінку для скролу
+    hideLoader();
   }
 });
 
@@ -83,6 +96,8 @@ if (btn) {
       const data = await getImagesByQuery(searchQuery, currentPage);
 
       createGallery(data.hits, true);
+
+      smoothScroll();
 
       if (currentPage >= totalPages) {
         hideLoadMoreButton();

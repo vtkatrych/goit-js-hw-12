@@ -53,7 +53,6 @@ export function createGallery(images, isAppend = false) {
 
   if (isAppend) {
     galleryContainer.insertAdjacentHTML('beforeend', galleryMarkup);
-    smoothScroll();
   } else {
     galleryContainer.innerHTML = galleryMarkup;
   }
