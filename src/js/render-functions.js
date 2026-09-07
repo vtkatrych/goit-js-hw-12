@@ -53,7 +53,7 @@ export function createGallery(images, isAppend = false) {
 
   if (isAppend) {
     galleryContainer.insertAdjacentHTML('beforeend', galleryMarkup);
-    smoothScroll(); // Викликаємо скрол тільки при додаванні сторінок
+    smoothScroll();
   } else {
     galleryContainer.innerHTML = galleryMarkup;
   }
@@ -61,7 +61,6 @@ export function createGallery(images, isAppend = false) {
   lightbox.refresh();
 }
 
-// Зауваження: обчислювати висоту елемента галереї через getBoundingClientRect()
 function smoothScroll() {
   const firstCard = galleryContainer.querySelector('.gallery-item');
   if (firstCard) {
